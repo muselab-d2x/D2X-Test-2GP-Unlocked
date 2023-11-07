@@ -2,20 +2,10 @@ name: Create Dev Scratch Org
 
 on:
   workflow_dispatch:
-    secrets:
-      # Either dev-hub-auth-url or dev-hub-username, dev-hub-client-id, and dev-hub-private-key are required
-      dev-hub-auth-url:
-        required: false
-      dev-hub-username:
-        required: false
-      dev-hub-client-id:
-        required: false
-      dev-hub-private-key:
-        required: false
-      gh-email:
-        required: true      
-      github-token:
+    inputs:
+      scratch_create_request_id:
         required: true
+        type: integer
 
 jobs:
     create-dev-org:
@@ -29,9 +19,6 @@ jobs:
                 password: ${{ secrets.github-token }}
             env:
                 DEV_HUB_AUTH_URL: "${{ secrets.dev-hub-auth-url }}"
-                DEV_HUB_USERNAME: "${{ secrets.dev-hub-username }}"
-                DEV_HUB_CLIENT_ID: "${{ secrets.dev-hub-client-id }}"
-                DEV_HUB_PRIVATE_KEY: "${{ secrets.dev-hub-private-key }}"
                 CUMULUSCI_SERVICE_github: "{ \"username\": \"${{ github.actor }}\", \"token\": \"${{ secrets.github-token }}\", \"email\": \"${{ secrets.gh-email }}\" }"
         steps:
             - name: Checkout
@@ -42,3 +29,20 @@ jobs:
               run: cci org default dev
             - name: Run dev_org flow
               run: cci flow run dev_org
+            - name: Install coreapi
+              run: pip install coreapi-cli
+            - name: Save org to D2X Cloud
+              run: \
+                   export AUTH_URL=`sfdx org display --verbose --json -u ${{ repo.name }} | jq ".sfdxAuthUrl"`; \
+                   export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`; \
+                   coreapi headers add Authorization "Token ${{ secrets.d2x-cloud-base-url }}"
+                   coreapi get ${{ secrets.d2x-cloud-base-url }}/docs/
+                   coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p $ORG_CONFIG
+
+              shell: bash
+        secrets:
+            d2x-cloud-base-url: ${{ secrets.D2X_CLOUD_BASE_URL }}
+            d2x-cloud-token: ${{ secrets.D2X_CLOUD_TOKEN }}
+            dev-hub-auth-url: "${{ secrets.DEV_HUB_AUTH_URL }}"
+            gh-email: "${{ secrets.GH_EMAIL }}"
+            github-token: "${{ secrets.GITHUB_TOKEN }}"
