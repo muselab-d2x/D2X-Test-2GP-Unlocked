@@ -1,3 +1,9 @@
+on:
+    workflow_dispatch:
+        inputs:
+            scratch_create_request_id:
+                required: True
+                type: integer
 jobs:
     create-dev-org:
         name: "Create Dev Scratch Org"
@@ -23,16 +29,11 @@ jobs:
             - name: Install coreapi
               run: pip install coreapi-cli
             - name: "Save org to D2X Cloud: ${{ github.event.input.scratch_create_request_id }}"
-              run: export AUTH_URL=`sfdx org display --verbose --json -u ${{ repo.name }} | jq ".sfdxAuthUrl"`;
-                   "export ORG_CONFIG=`cci org info --json | jq "'"'". += {'sfdx_auth_url': $AUTH_URL}"`;
-                   coreapi headers add Authorization "Token ${{ secrets.d2x-cloud-base-url }}";
-                   coreapi get ${{ secrets.d2x-cloud-base-url }}/docs/
+              run: |
+                   export AUTH_URL=`sfdx org display --verbose --json -u ${{ repo.name }} | jq ".sfdxAuthUrl"`
+                   export ORG_CONFIG=`cci org info --json | jq "'"'". += {'sfdx_auth_url'"':'" $AUTH_URL}"`
+                   coreapi headers add Authorization "Token ${{ secrets.D2X_CLOUD_TOKEN }}"
+                   coreapi get ${{ secrets.D2X_CLOUD_BASE_URL }}/docs/
                    coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p org_config="""$ORG_CONFIG"""
 
               shell: bash
-        secrets:
-            d2x-cloud-base-url: ${{ secrets.D2X_CLOUD_BASE_URL }}
-            d2x-cloud-token: ${{ secrets.D2X_CLOUD_TOKEN }}
-            dev-hub-auth-url: "${{ secrets.DEV_HUB_AUTH_URL }}"
-            gh-email: "${{ secrets.GH_EMAIL }}"
-            github-token: "${{ secrets.GITHUB_TOKEN }}"
