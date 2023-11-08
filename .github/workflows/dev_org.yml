@@ -4,12 +4,7 @@ on:
             scratch_create_request_id:
                 required: True
                 type: integer
-        secrets:
-            d2x-cloud-base-url: ${{ secrets.D2X_CLOUD_BASE_URL }}
-            d2x-cloud-token: ${{ secrets.D2X_CLOUD_TOKEN }}
-            dev-hub-auth-url: "${{ secrets.DEV_HUB_AUTH_URL }}"
-            gh-email: "${{ secrets.GH_EMAIL }}"
-            github-token: "${{ secrets.GITHUB_TOKEN }}"
+
 jobs:
     create-dev-org:
         name: "Create Dev Scratch Org"
