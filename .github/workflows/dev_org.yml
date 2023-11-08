@@ -19,10 +19,12 @@ jobs:
             options: --user root
             credentials:
                 username: ${{ github.actor }}
-                password: ${{ secrets.github-token }}
+                password: ${{ secrets.GITHUB_TOKEN }}
             env:
-                DEV_HUB_AUTH_URL: "${{ secrets.dev-hub-auth-url }}"
-                CUMULUSCI_SERVICE_github: "{ \"username\": \"${{ github.actor }}\", \"token\": \"${{ secrets.github-token }}\", \"email\": \"${{ secrets.gh-email }}\" }"
+                D2X_CLOUD_BASE_URL: ${{ secrets.D2X_CLOUD_BASE_URL }}
+                D2X_CLOUD_TOKEN: ${{ secrets.D2X_CLOUD_BASE_URL }}
+                DEV_HUB_AUTH_URL: "${{ secrets.DEV_HUB_AUTH_URL }}"
+                CUMULUSCI_SERVICE_github: "{ \"username\": \"${{ github.actor }}\", \"token\": \"${{ secrets.GITHUB_TOKEN }}\", \"email\": \"${{ secrets.GH_EMAIL }}\" }"
                 REPO_NAME: ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
         steps:
             - name: Checkout
@@ -39,8 +41,8 @@ jobs:
               run: |
                    export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__dev | jq ".sfdxAuthUrl"`
                    export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
-                   coreapi headers add Authorization "Token ${{ secrets.D2X_CLOUD_TOKEN }}"
-                   coreapi get ${{ secrets.D2X_CLOUD_BASE_URL }}/docs/
+                   coreapi headers add Authorization "Token $D2X_CLOUD_TOKEN"
+                   coreapi get $D2X_CLOUD_BASE_URL/docs/
                    coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p org_config="""$ORG_CONFIG"""
 
               shell: bash
