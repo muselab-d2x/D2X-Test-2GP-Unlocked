@@ -31,7 +31,7 @@ jobs:
               run: cci flow run dev_org
             - name: Install coreapi
               run: pip install coreapi-cli
-            - name: Save org to D2X Cloud: ${{github.event.input.scratch_create_request_id}}
+            - name: "Save org to D2X Cloud: ${{ github.event.input.scratch_create_request_id }}"
               run: \
                    export AUTH_URL=`sfdx org display --verbose --json -u ${{ repo.name }} | jq ".sfdxAuthUrl"`; \
                    export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`; \
