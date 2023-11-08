@@ -31,7 +31,7 @@ jobs:
             - name: "Save org to D2X Cloud: ${{ github.event.input.scratch_create_request_id }}"
               run: |
                    export AUTH_URL=`sfdx org display --verbose --json -u ${{ repo.name }} | jq ".sfdxAuthUrl"`
-                   export ORG_CONFIG=`cci org info --json | jq "'"'". += {'sfdx_auth_url'"':'" $AUTH_URL}"`
+                   export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
                    coreapi headers add Authorization "Token ${{ secrets.D2X_CLOUD_TOKEN }}"
                    coreapi get ${{ secrets.D2X_CLOUD_BASE_URL }}/docs/
                    coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p org_config="""$ORG_CONFIG"""
