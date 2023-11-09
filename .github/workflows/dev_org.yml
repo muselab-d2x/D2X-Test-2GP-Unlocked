@@ -34,7 +34,8 @@ jobs:
                    npm install async
             - name: Save org to D2X Cloud - ${{ inputs.scratch_create_request_id }}
               run: |
-                   export AUTH_URL=`sf org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
+                   cci org info
+                   export AUTH_URL=`sf org display --verbose --json -u $REPO_NAME__feature | jq '.result.sfdxAuthUrl'`
                    export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
                    coreapi headers add Authorization "Token $D2X_CLOUD_TOKEN"
                    coreapi get $D2X_CLOUD_BASE_URL/docs/
