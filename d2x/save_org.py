@@ -10,7 +10,7 @@ org_name = sys.argv[1]
 
 cci = BaseCumulusCI(load_keychain=True)
 org = cci.keychain.get_org("feature")
-results = sfdx("org display --verbose --json", org)
+results = sfdx("org display --verbose --json", org.username)
 stderr_list = [line.strip() for line in p.stderr_text]
 stdout_list = [line.strip() for line in p.stdout_text]
 
