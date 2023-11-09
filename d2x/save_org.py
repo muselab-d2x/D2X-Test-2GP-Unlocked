@@ -3,15 +3,15 @@ import os
 import sys
 import coreapi
 from cumulusci.core.exceptions import SfdxOrgException
-from cumulusci.core.runtime import BaseCumulusCI
+from cumulusci.cli.runtime import CliRuntime
 from cumulusci.core.sfdx import sfdx
 
 org_name = sys.argv[1]
 
-cci = BaseCumulusCI(load_keychain=True)
+cci = CliRuntime(load_keychain=True)
 org = cci.keychain.get_org("feature")
 print("Creating scratch org")
-org.create_org()
+print(f"Username: {org.username}")
 cci.keychain.set_org(org)
 print("Getting sfdxAuthUrl from sfdx")
 p = sfdx("org display --verbose --json", org.username)
@@ -40,7 +40,7 @@ else:
 org.config["date_created"] = org.config["date_created"].isoformat()
 org.config["sfdxAuthUrl"] = org_info["result"]["sfdxAuthUrl"]
 
-print("Instatiating coreapi client")
+print("Instantiating coreapi client")
 auth = coreapi.auth.TokenAuthentication(
     scheme="Token",
     token=os.environ.get("D2X_CLOUD_TOKEN"),
@@ -50,6 +50,7 @@ print("Getting schema")
 schema = client.get(os.environ.get("D2X_CLOUD_BASE_URL") + "/docs/")
 
 print("Calling scratch-create-requests/complete")
+
 client.action(
     schema,
     ["scratch-create-requests", "complete"],
@@ -58,3 +59,12 @@ client.action(
         "org_config": org.config,
     },
 )
+create_request = client.action(
+    schema,
+    ["scratch-create-request", "read"],
+    params={
+        "id": os.environ.get("SCRATCH_CREATE_REQUEST_ID"),
+    },
+)
+
+print(f"D2X URL: {create_request['org_users'][0]['d2x_url']}")
