@@ -10,7 +10,7 @@ jobs:
         name: "Create Dev Scratch Org"
         runs-on: ubuntu-latest
         container:
-            image: ghcr.io/muselab-d2x/d2x:latest
+            image: ghcr.io/muselab-d2x/d2x:prototype
             options: --user root
             credentials:
                 username: ${{ github.actor }}
@@ -30,11 +30,8 @@ jobs:
               run: cci org default feature
             - name: Install coreapi
               run: |
-                   sudo apt-get update
-                   sudo apt-get install -y jq
                    pip install coreapi-cli
-                   npm install async
-            - name: "Save org to D2X Cloud: ${{ inputs.scratch_create_request_id }}"
+            - name: Save org to D2X Cloud: ${{ inputs.scratch_create_request_id }}
               run: |
                    export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
                    export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
