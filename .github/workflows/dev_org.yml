@@ -3,7 +3,7 @@ on:
         inputs:
             scratch_create_request_id:
                 required: True
-                type: integer
+                type: number
 
 jobs:
     create-dev-org:
@@ -17,7 +17,7 @@ jobs:
                 password: ${{ secrets.GITHUB_TOKEN }}
             env:
                 D2X_CLOUD_BASE_URL: ${{ secrets.D2X_CLOUD_BASE_URL }}
-                D2X_CLOUD_TOKEN: ${{ secrets.D2X_CLOUD_BASE_URL }}
+                D2X_CLOUD_TOKEN: ${{ secrets.D2X_CLOUD_TOKEN }}
                 DEV_HUB_AUTH_URL: "${{ secrets.DEV_HUB_AUTH_URL }}"
                 CUMULUSCI_SERVICE_github: "{ \"username\": \"${{ github.actor }}\", \"token\": \"${{ secrets.GITHUB_TOKEN }}\", \"email\": \"${{ secrets.GH_EMAIL }}\" }"
                 REPO_NAME: ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
