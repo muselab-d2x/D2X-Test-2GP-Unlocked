@@ -32,8 +32,10 @@ jobs:
               run: cci flow run dev_org
             - name: Install coreapi
               run: |
+                   sudo apt-get update
+                   sudo apt-get install -y jq
                    pip install coreapi-cli
-                   npm install async jq
+                   npm install async
             - name: "Save org to D2X Cloud: ${{ input.scratch_create_request_id }}"
               run: |
                    export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
