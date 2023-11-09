@@ -32,18 +32,22 @@ else:
             "Failed to parse json from output.\n  "
             f"Exception: {e.__class__.__name__}\n  Output: {''.join(stdout_list)}"
         )
-  
+
 org_config = org.config
 org_config["sfdxAuthUrl"] = org_info["result"]["sfdxAuthUrl"]
 
 auth = coreapi.auth.TokenAuthentication(
-    scheme='Token',
+    scheme="Token",
     token=os.environ.get("D2X_CLOUD_TOKEN"),
 )
 client = coreapi.Client(auth=auth)
 schema = client.get(os.environ.get("D2X_CLOUD_BASE_URL") + "/docs/")
 
-client.action(schema, ['scratch-create-request','complete'], params={
-  "id": os.environ.get("SCRATCH_CREATE_REQUEST_ID"),
-  "org_config": org_config,
-})
+client.action(
+    schema,
+    ["scratch-create-requests", "complete"],
+    params={
+        "id": os.environ.get("SCRATCH_CREATE_REQUEST_ID"),
+        "org_config": org_config,
+    },
+)
