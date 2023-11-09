@@ -33,7 +33,7 @@ jobs:
             - name: Install coreapi
               run: |
                    pip install coreapi-cli
-                   npm install async
+                   npm install async jq
             - name: "Save org to D2X Cloud: ${{ github.event.input.scratch_create_request_id }}"
               run: |
                    export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__dev | jq ".sfdxAuthUrl"`
