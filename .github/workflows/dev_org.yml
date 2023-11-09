@@ -31,6 +31,7 @@ jobs:
             - name: Install coreapi
               run: |
                    pip install coreapi-cli
+                   npm install async
             - name: Save org to D2X Cloud - ${{ inputs.scratch_create_request_id }}
               run: |
                    export AUTH_URL=`sf org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
