@@ -26,8 +26,8 @@ jobs:
               uses: actions/checkout@v2
             - name: Auth to DevHub
               run: /usr/local/bin/devhub.sh
-            - name: Set dev org as default org
-              run: cci org default dev
+            - name: Set feature org as default org
+              run: cci org default feature
             - name: Run dev_org flow
               run: cci flow run dev_org
             - name: Install coreapi
@@ -36,7 +36,7 @@ jobs:
                    npm install async jq
             - name: "Save org to D2X Cloud: ${{ github.event.input.scratch_create_request_id }}"
               run: |
-                   export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__dev | jq ".sfdxAuthUrl"`
+                   export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
                    export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
                    coreapi headers add Authorization "Token $D2X_CLOUD_TOKEN"
                    coreapi get $D2X_CLOUD_BASE_URL/docs/
