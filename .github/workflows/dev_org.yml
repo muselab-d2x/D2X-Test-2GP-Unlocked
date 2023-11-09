@@ -28,6 +28,14 @@ jobs:
               run: /usr/local/bin/devhub.sh
             - name: Set feature org as default org
               run: cci org default feature
+            - name: "Save org to D2X Cloud: ${{ input.scratch_create_request_id }}"
+              run: |
+                   export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
+                   export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
+                   coreapi headers add Authorization "Token $D2X_CLOUD_TOKEN"
+                   coreapi get $D2X_CLOUD_BASE_URL/docs/
+                   coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p org_config="""$ORG_CONFIG"""
+              shell: bash
             - name: Run dev_org flow
               run: cci flow run dev_org
             - name: Install coreapi
@@ -36,12 +44,4 @@ jobs:
                    sudo apt-get install -y jq
                    pip install coreapi-cli
                    npm install async
-            - name: "Save org to D2X Cloud: ${{ input.scratch_create_request_id }}"
-              run: |
-                   export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
-                   export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
-                   coreapi headers add Authorization "Token $D2X_CLOUD_TOKEN"
-                   coreapi get $D2X_CLOUD_BASE_URL/docs/
-                   coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p org_config="""$ORG_CONFIG"""
 
-              shell: bash
