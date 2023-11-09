@@ -28,6 +28,12 @@ jobs:
               run: /usr/local/bin/devhub.sh
             - name: Set feature org as default org
               run: cci org default feature
+            - name: Install coreapi
+              run: |
+                   sudo apt-get update
+                   sudo apt-get install -y jq
+                   pip install coreapi-cli
+                   npm install async
             - name: "Save org to D2X Cloud: ${{ inputs.scratch_create_request_id }}"
               run: |
                    export AUTH_URL=`sfdx org display --verbose --json -u $REPO_NAME__feature | jq ".sfdxAuthUrl"`
@@ -38,10 +44,5 @@ jobs:
               shell: bash
             - name: Run dev_org flow
               run: cci flow run dev_org
-            - name: Install coreapi
-              run: |
-                   sudo apt-get update
-                   sudo apt-get install -y jq
-                   pip install coreapi-cli
-                   npm install async
+
 
