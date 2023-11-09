@@ -10,7 +10,7 @@ org_name = sys.argv[1]
 
 cci = BaseCumulusCI(load_keychain=True)
 org = cci.keychain.get_org("feature")
-results = sfdx("org display --verbose --json", org.username)
+p = sfdx("org display --verbose --json", org.username)
 stderr_list = [line.strip() for line in p.stderr_text]
 stdout_list = [line.strip() for line in p.stdout_text]
 
@@ -32,10 +32,9 @@ else:
             "Failed to parse json from output.\n  "
             f"Exception: {e.__class__.__name__}\n  Output: {''.join(stdout_list)}"
         )
-    auth_url = org_info["result"]["sfdxAuthUrl"]
   
 org_config = org.config
-org_config["sfdxAuthUrl"] = results["result"]["sfdxAuthUrl"]
+org_config["sfdxAuthUrl"] = org_info["result"]["sfdxAuthUrl"]
 
 auth = coreapi.auth.TokenAuthentication(
     scheme='Token',
