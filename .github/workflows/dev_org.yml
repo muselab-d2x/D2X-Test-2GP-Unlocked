@@ -21,6 +21,7 @@ jobs:
                 DEV_HUB_AUTH_URL: "${{ secrets.DEV_HUB_AUTH_URL }}"
                 CUMULUSCI_SERVICE_github: "{ \"username\": \"${{ github.actor }}\", \"token\": \"${{ secrets.GITHUB_TOKEN }}\", \"email\": \"${{ secrets.GH_EMAIL }}\" }"
                 REPO_NAME: ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
+                SCRATCH_CREATE_REQUEST_ID: ${{ inputs.scratch_create_request_id }}
         steps:
             - name: Checkout
               uses: actions/checkout@v2
@@ -31,15 +32,9 @@ jobs:
             - name: Install coreapi
               run: |
                    pip install coreapi-cli
-                   npm install async
+
             - name: Save org to D2X Cloud - ${{ inputs.scratch_create_request_id }}
-              run: |
-                   cci org info
-                   export AUTH_URL=`sf org display --verbose --json -u $REPO_NAME__feature | jq '.result.sfdxAuthUrl'`
-                   export ORG_CONFIG=`cci org info --json | jq ". += {'sfdx_auth_url': $AUTH_URL}"`
-                   coreapi headers add Authorization "Token $D2X_CLOUD_TOKEN"
-                   coreapi get $D2X_CLOUD_BASE_URL/docs/
-                   coreapi action scratch-create-requests complete -p id=${{ inputs.scratch_create_request_id }} -p org_config="""$ORG_CONFIG"""
+              run: python d2x/save_org.py feature
               shell: bash
             - name: Run dev_org flow
               run: cci flow run dev_org
