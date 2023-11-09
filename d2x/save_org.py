@@ -61,7 +61,7 @@ client.action(
 )
 create_request = client.action(
     schema,
-    ["scratch-create-request", "read"],
+    ["scratch-create-requests", "read"],
     params={
         "id": os.environ.get("SCRATCH_CREATE_REQUEST_ID"),
     },
